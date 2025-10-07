@@ -1,9 +1,10 @@
 import { env } from "./config/env";
-import { prisma } from "./db/client";
+import { portfolioPrisma, intervuPrisma } from "./db/client";
 import { startHttpServer } from "./server";
 
 async function main() {
-  await prisma.$connect();
+  await portfolioPrisma.$connect();
+  await intervuPrisma.$connect();
   await startHttpServer();
 }
 

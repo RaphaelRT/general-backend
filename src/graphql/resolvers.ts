@@ -1,5 +1,7 @@
 import { GraphQLScalarType, Kind } from "graphql";
 import { portfolioPrisma, intervuPrisma } from "../db/client";
+import { Prisma as PortfolioPrisma } from "@prisma/portfolio-client";
+import { Prisma as IntervuPrisma } from "@prisma/intervu-client";
 
 const DateTime = new GraphQLScalarType({
   name: "DateTime",
@@ -13,18 +15,30 @@ export const resolvers = {
   Query: {
     health: () => "ok",
     portfolioProjects: async (_: any, args: any) => {
-      const where = args.search ? { OR: [{ name: { contains: args.search, mode: "insensitive" } }, { description: { contains: args.search, mode: "insensitive" } }] } : undefined;
+      const where: PortfolioPrisma.ProjectWhereInput | undefined = args.search
+        ? { OR: [
+            { name: { contains: args.search, mode: PortfolioPrisma.QueryMode.insensitive } },
+            { description: { contains: args.search, mode: PortfolioPrisma.QueryMode.insensitive } }
+          ] }
+        : undefined;
       return portfolioPrisma.project.findMany({ where, skip: args.skip, take: args.take, orderBy: { createdAt: "desc" } });
     },
     portfolioProject: (_: any, { id }: { id: string }) => portfolioPrisma.project.findUnique({ where: { id } }),
     portfolioExperiences: async (_: any, args: any) => {
-      const where = args.search ? { OR: [{ name: { contains: args.search, mode: "insensitive" } }, { description: { contains: args.search, mode: "insensitive" } }] } : undefined;
+      const where: PortfolioPrisma.ExperienceWhereInput | undefined = args.search
+        ? { OR: [
+            { name: { contains: args.search, mode: PortfolioPrisma.QueryMode.insensitive } },
+            { description: { contains: args.search, mode: PortfolioPrisma.QueryMode.insensitive } }
+          ] }
+        : undefined;
       return portfolioPrisma.experience.findMany({ where, skip: args.skip, take: args.take, orderBy: { createdAt: "desc" } });
     },
     portfolioExperience: (_: any, { id }: { id: string }) => portfolioPrisma.experience.findUnique({ where: { id } }),
     intervuCategories: () => intervuPrisma.category.findMany({ orderBy: { name: "asc" } }),
     intervuQuestions: async (_: any, args: any) => {
-      const where = args.search ? { OR: [{ title: { contains: args.search, mode: "insensitive" } }] } : undefined;
+      const where: IntervuPrisma.QuestionWhereInput | undefined = args.search
+        ? { OR: [ { title: { contains: args.search, mode: IntervuPrisma.QueryMode.insensitive } } ] }
+        : undefined;
       return intervuPrisma.question.findMany({ where, skip: args.skip, take: args.take, orderBy: { createdAt: "desc" } });
     },
     intervuQuestion: (_: any, { id }: { id: string }) => intervuPrisma.question.findUnique({ where: { id } }),

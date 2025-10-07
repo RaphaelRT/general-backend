@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "npm run prisma:generate",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "prebuild": "npm run prisma:generate",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "prisma:generate": "prisma generate --schema prisma/portfolio.prisma && prisma generate --schema prisma/intervu.prisma",
@@ -27,6 +29,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/pg": "^8.6.6",
     "@types/node": "^20.12.12",
     "prisma": "^5.18.0",
     "ts-node": "^10.9.2",

@@ -5,6 +5,7 @@ RUN npm ci --ignore-scripts || npm install --no-audit --no-fund --ignore-scripts
 
 FROM node:20-bookworm-slim AS builder
 WORKDIR /app
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate --schema prisma/portfolio.prisma && npx prisma generate --schema prisma/intervu.prisma && npm run build
@@ -12,6 +13,7 @@ RUN npx prisma generate --schema prisma/portfolio.prisma && npx prisma generate 
 FROM node:20-bookworm-slim AS runner
 ENV NODE_ENV=production
 WORKDIR /app
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma

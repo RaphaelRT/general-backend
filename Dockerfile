@@ -12,6 +12,7 @@ RUN npx prisma generate --schema prisma/portfolio.prisma && npx prisma generate 
 FROM node:20-alpine AS runner
 ENV NODE_ENV=production
 WORKDIR /app
+RUN apk add --no-cache openssl1.1-compat
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma

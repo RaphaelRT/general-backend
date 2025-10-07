@@ -3,9 +3,6 @@ name: general-backend CI
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'general-backend/**'
-      - '.github/workflows/general-backend-ci.yml'
 
 jobs:
   build-and-deploy:

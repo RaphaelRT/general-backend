@@ -16,6 +16,10 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(rateLimit({ windowMs: 60_000, max: 120 }));
 app.use(bodyParser.json());
 
+app.get("/healthz", (_req, res) => {
+  res.status(200).send("ok");
+});
+
 export async function startHttpServer() {
   const server = new ApolloServer({ typeDefs, resolvers });
   await server.start();

@@ -16,12 +16,11 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(rateLimit({ windowMs: 60_000, max: 120 }));
 app.use(bodyParser.json());
 
-const server = new ApolloServer({ typeDefs, resolvers });
-await server.start();
-app.use("/graphql", bodyParser.json(), expressMiddleware(server, { context: async () => ({}) }));
-app.use("/api/graphql", bodyParser.json(), expressMiddleware(server, { context: async () => ({}) }));
-
-export function startHttpServer() {
+export async function startHttpServer() {
+  const server = new ApolloServer({ typeDefs, resolvers });
+  await server.start();
+  app.use("/graphql", bodyParser.json(), expressMiddleware(server, { context: async () => ({}) }));
+  app.use("/api/graphql", bodyParser.json(), expressMiddleware(server, { context: async () => ({}) }));
   return new Promise<void>(resolve => {
     app.listen(env.port, () => resolve());
   });

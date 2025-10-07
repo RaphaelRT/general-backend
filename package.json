@@ -2,7 +2,6 @@
   "name": "general-backend",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "predev": "npm run prisma:generate",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",

@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS categories (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS questions (
+  id TEXT PRIMARY KEY,
+  category_id TEXT REFERENCES categories(id) ON DELETE SET NULL,
+  title TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS answers (
+  id TEXT PRIMARY KEY,
+  question_id TEXT REFERENCES questions(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+

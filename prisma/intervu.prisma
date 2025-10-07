@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/intervu-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_INTERVU")
+}
+
+model Category {
+  id   String @id @default(cuid())
+  name String
+  questions Question[]
+
+  @@map("categories")
+}
+
+model Question {
+  id        String   @id @default(cuid())
+  title     String
+  createdAt DateTime @default(now()) @map("created_at")
+  category  Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+  answers   Answer[]
+
+  @@map("questions")
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  content    String
+  createdAt  DateTime @default(now()) @map("created_at")
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId String
+
+  @@map("answers")
+}
+
+

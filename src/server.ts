@@ -10,7 +10,7 @@ import { typeDefs } from "./graphql/typeDefs";
 import { resolvers } from "./graphql/resolvers";
 
 const app = express();
-app.set("trust proxy", true);
+app.set("trust proxy", 1);
 app.use(helmet());
 app.use(cors({ origin: true, credentials: true }));
 app.use(rateLimit({ windowMs: 60_000, max: 120 }));

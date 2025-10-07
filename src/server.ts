@@ -19,6 +19,7 @@ app.use(bodyParser.json());
 const server = new ApolloServer({ typeDefs, resolvers });
 await server.start();
 app.use("/graphql", bodyParser.json(), expressMiddleware(server, { context: async () => ({}) }));
+app.use("/api/graphql", bodyParser.json(), expressMiddleware(server, { context: async () => ({}) }));
 
 export function startHttpServer() {
   return new Promise<void>(resolve => {

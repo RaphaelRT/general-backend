@@ -27,4 +27,13 @@ model Experience {
   @@map("experiences")
 }
 
+model Formation {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("formations")
+}
+
 

@@ -1,8 +1,6 @@
-import { PrismaClient as PortfolioClient } from "@prisma/portfolio-client";
-import { PrismaClient as IntervuClient } from "@prisma/intervu-client";
-
-export const portfolioPrisma = new PortfolioClient();
-export const intervuPrisma = new IntervuClient();
+// Conservé pour compatibilité éventuelle; chaque module expose désormais son client
+export { portfolioPrisma } from "../modules/portfolio/db";
+export { intervuPrisma } from "../modules/intervu/db";
 
 
 

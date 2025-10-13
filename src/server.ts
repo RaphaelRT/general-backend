@@ -6,8 +6,7 @@ import { env } from "./config/env";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import bodyParser from "body-parser";
-import { typeDefs } from "./graphql/typeDefs";
-import { resolvers } from "./graphql/resolvers";
+import { typeDefs, resolvers } from "./graphql";
 
 const app = express();
 app.set("trust proxy", 1);

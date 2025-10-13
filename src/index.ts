@@ -1,5 +1,6 @@
 import { env } from "./config/env";
-import { portfolioPrisma, intervuPrisma } from "./db/client";
+import { portfolioPrisma } from "./modules/portfolio/db";
+import { intervuPrisma } from "./modules/intervu/db";
 import { startHttpServer } from "./server";
 
 async function main() {

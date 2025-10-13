@@ -20,10 +20,19 @@ app.get("/healthz", (_req, res) => {
 });
 
 export async function startHttpServer() {
-  const server = new ApolloServer({ typeDefs, resolvers });
+  type GraphQLContext = {};
+  const server = new ApolloServer<GraphQLContext>({ typeDefs, resolvers });
   await server.start();
-  app.use("/graphql", bodyParser.json(), expressMiddleware(server, { context: async () => ({}) }));
-  app.use("/api/graphql", bodyParser.json(), expressMiddleware(server, { context: async () => ({}) }));
+  app.use(
+    "/graphql",
+    bodyParser.json(),
+    expressMiddleware<GraphQLContext>(server, { context: async () => ({}) })
+  );
+  app.use(
+    "/api/graphql",
+    bodyParser.json(),
+    expressMiddleware<GraphQLContext>(server, { context: async () => ({}) })
+  );
   return new Promise<void>(resolve => {
     app.listen(env.port, () => resolve());
   });

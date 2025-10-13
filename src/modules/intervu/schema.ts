@@ -35,8 +35,15 @@ export const intervuResolvers = {
   Query: {
     intervuCategories: () => intervuPrisma.category.findMany({ orderBy: { name: "asc" } }),
     intervuQuestions: async (_: any, args: any) => {
-      const where: IntervuPrisma.QuestionWhereInput | undefined = args.search
-        ? { OR: [ { title: { contains: args.search, mode: IntervuPrisma.QueryMode.insensitive } } ] }
+      const query: string | undefined = typeof args.search === "string" ? args.search.trim() : undefined;
+      const where: IntervuPrisma.QuestionWhereInput | undefined = query && query.length > 0
+        ? {
+            OR: [
+              { title: { contains: query, mode: IntervuPrisma.QueryMode.insensitive } },
+              { category: { name: { contains: query, mode: IntervuPrisma.QueryMode.insensitive } } },
+              { answers: { some: { content: { contains: query, mode: IntervuPrisma.QueryMode.insensitive } } } }
+            ]
+          }
         : undefined;
       return intervuPrisma.question.findMany({ where, skip: args.skip, take: args.take, orderBy: { createdAt: "desc" } });
     },

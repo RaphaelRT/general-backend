@@ -15,4 +15,11 @@ CREATE TABLE IF NOT EXISTS answers (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Indexes to optimize search by question title, category name, and answer content
+CREATE INDEX IF NOT EXISTS idx_questions_title ON questions (title);
+CREATE INDEX IF NOT EXISTS idx_questions_category_id ON questions (category_id);
+CREATE INDEX IF NOT EXISTS idx_categories_name ON categories (name);
+CREATE INDEX IF NOT EXISTS idx_answers_question_id ON answers (question_id);
+CREATE INDEX IF NOT EXISTS idx_answers_content ON answers (content);
+
 

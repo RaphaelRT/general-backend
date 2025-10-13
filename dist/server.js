@@ -12,8 +12,7 @@ const env_1 = require("./config/env");
 const server_1 = require("@apollo/server");
 const express4_1 = require("@apollo/server/express4");
 const body_parser_1 = __importDefault(require("body-parser"));
-const typeDefs_1 = require("./graphql/typeDefs");
-const resolvers_1 = require("./graphql/resolvers");
+const graphql_1 = require("./graphql");
 const app = (0, express_1.default)();
 app.set("trust proxy", 1);
 app.use((0, helmet_1.default)());
@@ -24,7 +23,7 @@ app.get("/healthz", (_req, res) => {
     res.status(200).send("ok");
 });
 async function startHttpServer() {
-    const server = new server_1.ApolloServer({ typeDefs: typeDefs_1.typeDefs, resolvers: resolvers_1.resolvers });
+    const server = new server_1.ApolloServer({ typeDefs: graphql_1.typeDefs, resolvers: graphql_1.resolvers });
     await server.start();
     app.use("/graphql", body_parser_1.default.json(), (0, express4_1.expressMiddleware)(server, { context: async () => ({}) }));
     app.use("/api/graphql", body_parser_1.default.json(), (0, express4_1.expressMiddleware)(server, { context: async () => ({}) }));

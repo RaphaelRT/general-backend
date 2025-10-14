@@ -3,6 +3,7 @@ import { env } from "../config/env";
 import crypto from "node:crypto";
 
 export function requireApiAuth(req: Request, res: Response, next: NextFunction) {
+  if (req.method === "OPTIONS") return next();
   if (req.method === "GET" && req.path === "/healthz") return next();
 
   if (env.nodeEnv === "production") {

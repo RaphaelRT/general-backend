@@ -23,11 +23,7 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: (origin, cb) => {
-    if (!origin) return cb(null, true);
-    if (env.allowedOrigins.length === 0) return cb(null, true);
-    return env.allowedOrigins.includes(origin) ? cb(null, true) : cb(new Error("CORS"));
-  },
+  origin: true,
   credentials: true,
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]

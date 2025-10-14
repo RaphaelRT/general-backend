@@ -36,13 +36,13 @@ app.use(cors({
 app.use(rateLimit({ windowMs: 60_000, max: 60 }));
 app.use(bodyParser.json({ limit: "1mb" }));
 
-app.get("/healthz", (_req, res) => {
+app.get("/api/healthz", (_req, res) => {
   res.status(200).send("ok");
 });
 
 app.use(requireApiAuth);
 
-app.get("/metrics", async (_req, res) => {
+app.get("/api/metrics", async (_req, res) => {
   try {
     const text = await getMetricsText();
     res.setHeader("Content-Type", "text/plain; version=0.0.4; charset=utf-8");
@@ -52,7 +52,7 @@ app.get("/metrics", async (_req, res) => {
   }
 });
 
-app.get("/admin/top-queries", (req, res) => {
+app.get("/api/top-queries", (req, res) => {
   const limit = Math.max(1, Math.min(100, Number(req.query.limit ?? 20)));
   res.json({ items: getTopQueries(limit) });
 });
@@ -66,11 +66,6 @@ export async function startHttpServer() {
     introspection: env.nodeEnv !== "production"
   });
   await server.start();
-  app.use(
-    "/graphql",
-    bodyParser.json({ limit: "1mb" }),
-    expressMiddleware<GraphQLContext>(server, { context: async () => ({}) })
-  );
   app.use(
     "/api/graphql",
     bodyParser.json({ limit: "1mb" }),

@@ -8,17 +8,39 @@ import { expressMiddleware } from "@apollo/server/express4";
 import bodyParser from "body-parser";
 import { typeDefs, resolvers } from "./graphql";
 import { getMetricsText, getTopQueries } from "./metrics/monitor";
+import { requireApiAuth } from "./middleware/auth";
 
 const app = express();
 app.set("trust proxy", 1);
-app.use(helmet());
-app.use(cors({ origin: true, credentials: true }));
-app.use(rateLimit({ windowMs: 60_000, max: 120 }));
-app.use(bodyParser.json());
+app.use(helmet({
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: { defaultSrc: ["'self'"] }
+  },
+  referrerPolicy: { policy: "no-referrer" },
+  crossOriginResourcePolicy: { policy: "same-site" },
+  strictTransportSecurity: { maxAge: 15552000, includeSubDomains: true, preload: true }
+}));
+
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true);
+    if (env.allowedOrigins.length === 0) return cb(null, true);
+    return env.allowedOrigins.includes(origin) ? cb(null, true) : cb(new Error("CORS"));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
+app.use(rateLimit({ windowMs: 60_000, max: 60 }));
+app.use(bodyParser.json({ limit: "1mb" }));
 
 app.get("/healthz", (_req, res) => {
   res.status(200).send("ok");
 });
+
+app.use(requireApiAuth);
 
 app.get("/metrics", async (_req, res) => {
   try {
@@ -31,29 +53,27 @@ app.get("/metrics", async (_req, res) => {
 });
 
 app.get("/admin/top-queries", (req, res) => {
-  const token = process.env.ADMIN_TOKEN;
-  if (token) {
-    const header = req.headers["authorization"] as string | undefined;
-    if (!header || !header.startsWith("Bearer ") || header.slice(7) !== token) {
-      return res.status(401).json({ error: "unauthorized" });
-    }
-  }
   const limit = Math.max(1, Math.min(100, Number(req.query.limit ?? 20)));
   res.json({ items: getTopQueries(limit) });
 });
 
 export async function startHttpServer() {
   type GraphQLContext = {};
-  const server = new ApolloServer<GraphQLContext>({ typeDefs, resolvers });
+  const server = new ApolloServer<GraphQLContext>({
+    typeDefs,
+    resolvers,
+    csrfPrevention: true,
+    introspection: env.nodeEnv !== "production"
+  });
   await server.start();
   app.use(
     "/graphql",
-    bodyParser.json(),
+    bodyParser.json({ limit: "1mb" }),
     expressMiddleware<GraphQLContext>(server, { context: async () => ({}) })
   );
   app.use(
     "/api/graphql",
-    bodyParser.json(),
+    bodyParser.json({ limit: "1mb" }),
     expressMiddleware<GraphQLContext>(server, { context: async () => ({}) })
   );
   return new Promise<void>(resolve => {

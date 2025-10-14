@@ -35,7 +35,7 @@ function normalizeOperation(sql: string): string {
 }
 
 function keyFromSql(sql: string): string {
-  return sql.replace(/\s+/g, " ").trim().slice(0, 2000); // simple normalization
+  return sql.replace(/\s+/g, " ").trim().slice(0, 2000);
 }
 
 export function instrumentPrismaClient(prisma: any, clientName: string) {

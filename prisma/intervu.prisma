@@ -24,6 +24,7 @@ model Question {
   category  Category? @relation(fields: [categoryId], references: [id])
   categoryId String? @map("category_id")
   answers   Answer[]
+  fakeAnswers FakeAnswer[]
 
   @@map("questions")
 }
@@ -36,6 +37,16 @@ model Answer {
   questionId String @map("question_id")
 
   @@map("answers")
+}
+
+model FakeAnswer {
+  id         String   @id @default(cuid())
+  content    String
+  createdAt  DateTime @default(now()) @map("created_at")
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId String @map("question_id")
+
+  @@map("fake_answers")
 }
 
 

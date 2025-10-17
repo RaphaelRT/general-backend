@@ -4,8 +4,9 @@ import { intervuPrisma } from "./db";
 
 export const intervuTypeDefs = gql`
   type Category { id: ID!, name: String!, questions: [Question!]! }
-  type Question { id: ID!, title: String!, createdAt: DateTime!, category: Category, answers: [Answer!]! }
+  type Question { id: ID!, title: String!, createdAt: DateTime!, category: Category, answers: [Answer!]!, fakeAnswers: [FakeAnswer!]! }
   type Answer { id: ID!, content: String!, createdAt: DateTime!, question: Question! }
+  type FakeAnswer { id: ID!, content: String!, createdAt: DateTime!, question: Question! }
 
   extend type Query {
     intervuCategories: [Category!]!
@@ -19,6 +20,8 @@ export const intervuTypeDefs = gql`
   input QuestionUpdateInput { title: String, categoryId: ID }
   input AnswerCreateInput { questionId: ID!, content: String! }
   input AnswerUpdateInput { content: String }
+  input FakeAnswerCreateInput { questionId: ID!, content: String! }
+  input FakeAnswerUpdateInput { content: String }
 
   extend type Mutation {
     createIntervuCategory(data: CategoryCreateInput!): Category!
@@ -28,6 +31,9 @@ export const intervuTypeDefs = gql`
     createIntervuAnswer(data: AnswerCreateInput!): Answer!
     updateIntervuAnswer(id: ID!, data: AnswerUpdateInput!): Answer!
     deleteIntervuAnswer(id: ID!): Boolean!
+    createIntervuFakeAnswer(data: FakeAnswerCreateInput!): FakeAnswer!
+    updateIntervuFakeAnswer(id: ID!, data: FakeAnswerUpdateInput!): FakeAnswer!
+    deleteIntervuFakeAnswer(id: ID!): Boolean!
   }
 `;
 
@@ -57,11 +63,15 @@ export const intervuResolvers = {
     deleteIntervuQuestion: async (_: any, { id }: any) => { await intervuPrisma.question.delete({ where: { id } }); return true; },
     createIntervuAnswer: (_: any, { data }: any) => intervuPrisma.answer.create({ data }),
     updateIntervuAnswer: (_: any, { id, data }: any) => intervuPrisma.answer.update({ where: { id }, data }),
-    deleteIntervuAnswer: async (_: any, { id }: any) => { await intervuPrisma.answer.delete({ where: { id } }); return true; }
+    deleteIntervuAnswer: async (_: any, { id }: any) => { await intervuPrisma.answer.delete({ where: { id } }); return true; },
+    createIntervuFakeAnswer: (_: any, { data }: any) => intervuPrisma.fakeAnswer.create({ data }),
+    updateIntervuFakeAnswer: (_: any, { id, data }: any) => intervuPrisma.fakeAnswer.update({ where: { id }, data }),
+    deleteIntervuFakeAnswer: async (_: any, { id }: any) => { await intervuPrisma.fakeAnswer.delete({ where: { id } }); return true; }
   },
   Category: { questions: (p: any) => intervuPrisma.question.findMany({ where: { categoryId: p.id } }) },
-  Question: { category: (p: any) => (p.categoryId ? intervuPrisma.category.findUnique({ where: { id: p.categoryId } }) : null), answers: (p: any) => intervuPrisma.answer.findMany({ where: { questionId: p.id } }) },
-  Answer: { question: (p: any) => intervuPrisma.question.findUnique({ where: { id: p.questionId } }) }
+  Question: { category: (p: any) => (p.categoryId ? intervuPrisma.category.findUnique({ where: { id: p.categoryId } }) : null), answers: (p: any) => intervuPrisma.answer.findMany({ where: { questionId: p.id } }), fakeAnswers: (p: any) => intervuPrisma.fakeAnswer.findMany({ where: { questionId: p.id } }) },
+  Answer: { question: (p: any) => intervuPrisma.question.findUnique({ where: { id: p.questionId } }) },
+  FakeAnswer: { question: (p: any) => intervuPrisma.question.findUnique({ where: { id: p.questionId } }) }
 };
 
 
